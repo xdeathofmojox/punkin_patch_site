@@ -27,6 +27,8 @@
     <div class="character-wrapper" data-position="{{character.pk}}">
         <div class="character-title">
             <a href="{% url 'character-update' character.id %}">{{character}}</a>
+        </div>
+        <div>
             <a class="delete-link" href="{% url 'character-delete' character.id %}">&#215;</a>
         </div>
     </div>
