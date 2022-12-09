@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CharacterList, CharacterDetail, CharacterCreate, CharacterUpdate, CharacterDelete
+from .characterViews import CharacterList, CharacterDetail, CharacterCreate, CharacterUpdate, CharacterDelete
 
 urlpatterns = [
     path('characters/', CharacterList.as_view(), name='characters'),
