@@ -3,7 +3,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import PatchTemplate
-from .forms import PatchForm
+from .forms import PatchForm, RequestFormMixin
 from django.urls import reverse_lazy
 
 class PatchForUserMixin:
@@ -12,12 +12,6 @@ class PatchForUserMixin:
 
     def create(self, data):
         return PatchTemplate.objects.filter(user=self.request.user, **data)
-
-class PatchForRequestFormMixin:
-    def get_form_kwargs(self, *args, **kwargs):
-        form_kwargs = super().get_form_kwargs(*args, **kwargs)
-        form_kwargs['request'] = self.request
-        return form_kwargs
 
 class PatchList(PatchForUserMixin, LoginRequiredMixin, ListView):
     model = PatchTemplate
@@ -43,7 +37,7 @@ class PatchDetail(PatchForUserMixin, LoginRequiredMixin, DetailView):
     context_object_name = 'patch'
     template_name = 'punkin_patch/patches/patch.html'
 
-class PatchCreate(PatchForRequestFormMixin, PatchForUserMixin, LoginRequiredMixin, CreateView):
+class PatchCreate(RequestFormMixin, PatchForUserMixin, LoginRequiredMixin, CreateView):
     model = PatchTemplate
     form_class = PatchForm
     success_url = reverse_lazy('patches')
@@ -54,7 +48,7 @@ class PatchCreate(PatchForRequestFormMixin, PatchForUserMixin, LoginRequiredMixi
         return super(PatchCreate, self).form_valid(form)
 
 
-class PatchUpdate(PatchForRequestFormMixin, PatchForUserMixin, LoginRequiredMixin, UpdateView):
+class PatchUpdate(RequestFormMixin, PatchForUserMixin, LoginRequiredMixin, UpdateView):
     model = PatchTemplate
     form_class = PatchForm
     success_url = reverse_lazy('patches')

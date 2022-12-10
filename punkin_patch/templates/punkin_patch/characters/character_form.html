@@ -5,9 +5,12 @@
     <a href="{% url 'characters' %}">&#8592; Back</a>
 </div>
 
+{% if character.image %}
+  <img src="{{character.image.url}}" alt="img" width="250" style="height: 100%">
+{% endif %}
 
 <div class="card-body">
-    <form method="POST" action="">
+    <form method="POST" enctype="multipart/form-data" action="">
         {% csrf_token %}
         {{form.as_p}}
         <input class="button" type="submit" value="Submit">

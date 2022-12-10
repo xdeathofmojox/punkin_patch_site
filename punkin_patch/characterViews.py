@@ -3,6 +3,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Character
+from .forms import CharacterForm
 from django.urls import reverse_lazy
 
 class CharacterForUserMixin:
@@ -38,7 +39,7 @@ class CharacterDetail(CharacterForUserMixin, LoginRequiredMixin, DetailView):
 
 class CharacterCreate(CharacterForUserMixin, LoginRequiredMixin, CreateView):
     model = Character
-    fields = ['name']
+    form_class = CharacterForm
     success_url = reverse_lazy('characters')
     template_name = 'punkin_patch/characters/character_form.html'
 
@@ -49,7 +50,7 @@ class CharacterCreate(CharacterForUserMixin, LoginRequiredMixin, CreateView):
 
 class CharacterUpdate(CharacterForUserMixin, LoginRequiredMixin, UpdateView):
     model = Character
-    fields = ['name']
+    form_class = CharacterForm
     success_url = reverse_lazy('characters')
     template_name = 'punkin_patch/characters/character_form.html'
 
