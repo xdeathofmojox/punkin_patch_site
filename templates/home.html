@@ -4,9 +4,7 @@
 
 {% block content %}
 {% if user.is_authenticated %}
-  Hi {{ user.username }}!
-  <p><a href="{% url 'characters' %}">View Characters</a></p>
-  <p><a href="{% url 'logout' %}">Log Out</a></p>
+{% include 'navbar.html' %}
 {% else %}
   <p>You are not logged in</p>
   <a href="{% url 'signup' %}">Sign Up</a>

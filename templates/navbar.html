@@ -1,0 +1,13 @@
+{% block content %}
+
+Hi {{ user.username }}!
+
+<div>
+    <a href="{% url 'home' %}">Home</a>
+    <a href="{% url 'characters' %}">View Characters</a>
+    <a href="{% url 'patches' %}">View Patches</a>
+    <a href="{% url 'logout' %}">Log Out</a>
+</div>
+
+
+{% endblock %}
