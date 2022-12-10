@@ -1,0 +1,44 @@
+{% extends 'punkin_patch/main.html' %} {% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<div class="header-bar">
+    <div>
+        <h1>Hello {{request.user}}</h1>
+    </div>
+
+    {% if request.user.is_authenticated %}
+    <a href="{% url 'logout' %}">Logout</a> {% else %}
+    <a href="{% url 'login' %}">Login</a> {% endif %}
+</div>
+
+
+<div id="search-add-wrapper">
+    <form method="GET" style="display: flex;">
+        <input type='text' name='search-area' placeholder="Search patches" value="{{search_input}}">
+        <input class="button" type="submit" value='Search'>
+    </form>
+    {% if patches|length > 0 %}
+    <a id="add-link" href="{% url 'patch-create' %}">&#x2b;</a>
+    {% endif %}
+</div>
+
+<div id="patchlist" class="patch-items-wrapper">
+    {% for patch in patches %}
+    <div class="patch-wrapper" data-position="{{patch.pk}}">
+        <div class="patch-title">
+            <a href="{% url 'patch-update' patch.id %}">{{patch}}</a>
+        </div>
+        <div>
+            <a class="delete-link" href="{% url 'patch-delete' patch.id %}">&#215;</a>
+        </div>
+    </div>
+
+    {% empty %}
+    <div style="text-align: center; padding-bottom: 10px; line-height: 1em;">
+        <h3>No new patches are created.</h3>
+        <h3>Create a <a style="text-decoration: none; color: #e53935;" href="{% url 'patch-create' %}">New patch</a> ! </h3>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock content %}
