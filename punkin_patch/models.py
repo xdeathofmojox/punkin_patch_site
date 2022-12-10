@@ -11,6 +11,7 @@ class Character(models.Model):
 class PatchTemplate(models.Model):
     name = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    characters = models.ManyToManyField(Character)
 
     def __str__(self):
         return self.name

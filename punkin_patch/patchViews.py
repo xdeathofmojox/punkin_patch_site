@@ -3,9 +3,23 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import PatchTemplate
+from .forms import PatchForm
 from django.urls import reverse_lazy
 
-class PatchList(LoginRequiredMixin, ListView):
+class PatchForUserMixin:
+    def get_queryset(self):
+        return PatchTemplate.objects.filter(user=self.request.user)
+
+    def create(self, data):
+        return PatchTemplate.objects.filter(user=self.request.user, **data)
+
+class PatchForRequestFormMixin:
+    def get_form_kwargs(self, *args, **kwargs):
+        form_kwargs = super().get_form_kwargs(*args, **kwargs)
+        form_kwargs['request'] = self.request
+        return form_kwargs
+
+class PatchList(PatchForUserMixin, LoginRequiredMixin, ListView):
     model = PatchTemplate
     context_object_name = 'patches'
     template_name = 'punkin_patch/patches/patch_list.html'
@@ -24,15 +38,14 @@ class PatchList(LoginRequiredMixin, ListView):
         return context
 
 
-class PatchDetail(LoginRequiredMixin, DetailView):
+class PatchDetail(PatchForUserMixin, LoginRequiredMixin, DetailView):
     model = PatchTemplate
     context_object_name = 'patch'
     template_name = 'punkin_patch/patches/patch.html'
 
-
-class PatchCreate(LoginRequiredMixin, CreateView):
+class PatchCreate(PatchForRequestFormMixin, PatchForUserMixin, LoginRequiredMixin, CreateView):
     model = PatchTemplate
-    fields = ['name']
+    form_class = PatchForm
     success_url = reverse_lazy('patches')
     template_name = 'punkin_patch/patches/patch_form.html'
 
@@ -41,18 +54,15 @@ class PatchCreate(LoginRequiredMixin, CreateView):
         return super(PatchCreate, self).form_valid(form)
 
 
-class PatchUpdate(LoginRequiredMixin, UpdateView):
+class PatchUpdate(PatchForRequestFormMixin, PatchForUserMixin, LoginRequiredMixin, UpdateView):
     model = PatchTemplate
-    fields = ['name']
+    form_class = PatchForm
     success_url = reverse_lazy('patches')
     template_name = 'punkin_patch/patches/patch_form.html'
 
 
-class PatchDelete(LoginRequiredMixin, DeleteView):
+class PatchDelete(PatchForUserMixin, LoginRequiredMixin, DeleteView):
     model = PatchTemplate
     context_object_name = 'patch'
     success_url = reverse_lazy('patches')
     template_name = 'punkin_patch/patches/patch_confirm_delete.html'
-    def get_queryset(self):
-        owner = self.request.user
-        return self.model.objects.filter(user=owner)

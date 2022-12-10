@@ -5,7 +5,14 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Character
 from django.urls import reverse_lazy
 
-class CharacterList(LoginRequiredMixin, ListView):
+class CharacterForUserMixin:
+    def get_queryset(self):
+        return Character.objects.filter(user=self.request.user)
+
+    def create(self, data):
+        return Character.objects.filter(user=self.request.user, **data)
+
+class CharacterList(CharacterForUserMixin, LoginRequiredMixin, ListView):
     model = Character
     context_object_name = 'characters'
     template_name = 'punkin_patch/characters/character_list.html'
@@ -24,13 +31,12 @@ class CharacterList(LoginRequiredMixin, ListView):
         return context
 
 
-class CharacterDetail(LoginRequiredMixin, DetailView):
+class CharacterDetail(CharacterForUserMixin, LoginRequiredMixin, DetailView):
     model = Character
     context_object_name = 'character'
     template_name = 'punkin_patch/characters/character.html'
 
-
-class CharacterCreate(LoginRequiredMixin, CreateView):
+class CharacterCreate(CharacterForUserMixin, LoginRequiredMixin, CreateView):
     model = Character
     fields = ['name']
     success_url = reverse_lazy('characters')
@@ -41,18 +47,15 @@ class CharacterCreate(LoginRequiredMixin, CreateView):
         return super(CharacterCreate, self).form_valid(form)
 
 
-class CharacterUpdate(LoginRequiredMixin, UpdateView):
+class CharacterUpdate(CharacterForUserMixin, LoginRequiredMixin, UpdateView):
     model = Character
     fields = ['name']
     success_url = reverse_lazy('characters')
     template_name = 'punkin_patch/characters/character_form.html'
 
 
-class CharacterDelete(LoginRequiredMixin, DeleteView):
+class CharacterDelete(CharacterForUserMixin, LoginRequiredMixin, DeleteView):
     model = Character
     context_object_name = 'character'
     success_url = reverse_lazy('characters')
     template_name = 'punkin_patch/characters/character_confirm_delete.html'
-    def get_queryset(self):
-        owner = self.request.user
-        return self.model.objects.filter(user=owner)
